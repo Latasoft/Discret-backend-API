@@ -52,7 +52,7 @@ class Motel extends Model
 
     public function usuarios(): HasMany
     {
-        return $this->hasMany(Usuario::class, 'id_motel');
+        return $this->hasMany(User::class, 'id_motel');
     }
 
     public function tiposHabitacion(): HasMany

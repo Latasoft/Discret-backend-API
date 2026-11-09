@@ -3,63 +3,46 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Valoracion extends Model
 {
-    protected $table = 'valoracion';
-
-    protected $primaryKey = 'id_valoracion';
+    protected $table = 'valoraciones';
 
     protected $fillable = [
-        'puntuacion',
-        'comentario',
-        'estado',
-        'id_reserva',
-        'id_cliente',
-        'id_habitacion',
         'id_motel',
+        'reserva_id',
+        'cliente_id',
+        'puntuacion',
+        'etiquetas',
+        'comentario',
+        'token',
+        'enviada_at',
+        'respondida_at',
     ];
 
-    /*
-    |---------------------------------------
-    | RELACIONES
-    |---------------------------------------
-    */
-
-    public function reserva()
+    protected function casts(): array
     {
-        return $this->belongsTo(Reserva::class, 'id_reserva');
+        return [
+            'puntuacion' => 'integer',
+            'etiquetas' => 'array',
+            'enviada_at' => 'datetime',
+            'respondida_at' => 'datetime',
+        ];
     }
 
-    public function cliente()
+    public function reserva(): BelongsTo
     {
-        return $this->belongsTo(Cliente::class, 'id_cliente');
+        return $this->belongsTo(Reserva::class);
     }
 
-    public function habitacion()
+    public function cliente(): BelongsTo
     {
-        return $this->belongsTo(Habitacion::class, 'id_habitacion');
+        return $this->belongsTo(Cliente::class);
     }
 
-    public function motel()
+    public function motel(): BelongsTo
     {
         return $this->belongsTo(Motel::class, 'id_motel');
-    }
-
-    /*
-    |---------------------------------------
-    | SCOPES
-    |---------------------------------------
-    */
-
-    public function scopeVisibles(Builder $query)
-    {
-        return $query->where('estado', 'VISIBLE');
-    }
-
-    public function scopeBuenas(Builder $query)
-    {
-        return $query->where('puntuacion', '>=', 4);
     }
 }
