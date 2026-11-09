@@ -8,59 +8,31 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TipoHabitacion extends Model
 {
-    protected $table = 'tipo_habitacion';
-
-    protected $primaryKey = 'id_tipo_habitacion';
+    protected $table = 'tipo_habitaciones';
 
     protected $fillable = [
+        'id_motel',
         'nombre',
         'descripcion',
-        'activa',
-        'id_motel',
+        'precio_base',
+        'activo',
     ];
 
-    protected $casts = [
-        'activa' => 'boolean',
-    ];
-
-    /*
-    |--------------------------------------------------------------------------
-    | Relaciones
-    |--------------------------------------------------------------------------
-    */
-
-    public function motel(): BelongsTo
+    protected function casts(): array
     {
-        return $this->belongsTo(
-            Motel::class,
-            'id_motel'
-        );
+        return [
+            'precio_base' => 'integer',
+            'activo' => 'boolean',
+        ];
     }
 
     public function habitaciones(): HasMany
     {
-        return $this->hasMany(
-            Habitacion::class,
-            'id_tipo_habitacion'
-        );
+        return $this->hasMany(Habitacion::class);
     }
 
-    public function tarifas(): HasMany
+    public function motel(): BelongsTo
     {
-        return $this->hasMany(
-            TarifaHabitacion::class,
-            'id_tipo_habitacion'
-        );
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Scopes
-    |--------------------------------------------------------------------------
-    */
-
-    public function scopeActivas($query)
-    {
-        return $query->where('activa', true);
+        return $this->belongsTo(Motel::class, 'id_motel');
     }
 }

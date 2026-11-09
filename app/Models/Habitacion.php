@@ -8,46 +8,31 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Habitacion extends Model
 {
-    protected $table = 'habitacion';
-
-    protected $primaryKey = 'id_habitacion';
-
-    public $timestamps = true;
+    protected $table = 'habitaciones';
 
     protected $fillable = [
+        'id_motel',
+        'tipo_habitacion_id',
         'numero',
         'nombre',
+        'descripcion',
+        'precio',
         'estado',
         'activa',
-        'id_tipo_habitacion',
-        'id_motel',
     ];
 
-    protected $casts = [
-        'activa' => 'boolean',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-    ];
-
-    protected static function booted()
+    protected function casts(): array
     {
-        static::creating(function ($habitacion) {
-
-            if (empty($habitacion->estado)) {
-                $habitacion->estado = 'DISPONIBLE';
-            }
-
-            if (!isset($habitacion->activa)) {
-                $habitacion->activa = true;
-            }
-        });
+        return [
+            'precio' => 'integer',
+            'activa' => 'boolean',
+        ];
     }
 
     public function tipoHabitacion(): BelongsTo
     {
-        return $this->belongsTo(TipoHabitacion::class, 'id_tipo_habitacion');
+        return $this->belongsTo(TipoHabitacion::class);
     }
-
     public function motel(): BelongsTo
     {
         return $this->belongsTo(Motel::class, 'id_motel');
@@ -55,16 +40,6 @@ class Habitacion extends Model
 
     public function reservas(): HasMany
     {
-        return $this->hasMany(Reserva::class, 'id_habitacion');
-    }
-
-    public function scopeLibres($query)
-    {
-        return $query->where('estado', 'DISPONIBLE');
-    }
-
-    public function scopeActivas($query)
-    {
-        return $query->where('activa', true);
+        return $this->hasMany(Reserva::class);
     }
 }

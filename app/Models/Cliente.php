@@ -3,60 +3,50 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Cliente extends Model
 {
-    protected $table = 'cliente';
-
-    protected $primaryKey = 'id_cliente';
-
     protected $fillable = [
+        'id_motel',
         'nombre',
         'apellido',
         'telefono',
-        'email',
+        'correo',
         'fecha_nacimiento',
-        'id_motel',
+        'password',
+        'mayor_edad_confirmado',
+        'activo',
+        'ultimo_acceso_at',
     ];
 
-    protected $casts = [
-        'fecha_nacimiento' => 'date',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+    protected $hidden = [
+        'password',
     ];
 
-    /*
-    |---------------------------------------------------
-    | RELACIONES
-    |---------------------------------------------------
-    */
+    protected function casts(): array
+    {
+        return [
+            'fecha_nacimiento' => 'date',
+            'mayor_edad_confirmado' => 'boolean',
+            'activo' => 'boolean',
+            'ultimo_acceso_at' => 'datetime',
+        ];
+    }
 
-    public function motel()
+    public function reservas(): HasMany
+    {
+        return $this->hasMany(Reserva::class);
+    }
+
+    public function motel(): BelongsTo
     {
         return $this->belongsTo(Motel::class, 'id_motel');
     }
 
-    public function reservas()
+    public function valoraciones(): HasMany
     {
-        return $this->hasMany(Reserva::class, 'id_cliente');
-    }
-
-    /*
-    |---------------------------------------------------
-    | SCOPES
-    |---------------------------------------------------
-    */
-
-    // Buscar cliente por teléfono
-    public function scopeTelefono(Builder $query, $telefono)
-    {
-        return $query->where('telefono', $telefono);
-    }
-
-    // Buscar cliente por email
-    public function scopeEmail(Builder $query, $email)
-    {
-        return $query->where('email', $email);
+        return $this->hasMany(Valoracion::class);
     }
 }
